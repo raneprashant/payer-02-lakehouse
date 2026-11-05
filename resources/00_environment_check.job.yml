@@ -1,0 +1,13 @@
+# Intentionally one safe, read-only job in starter repository.
+# Additional Bronze/Silver/Gold jobs will be authored in learning exercises.
+resources:
+  jobs:
+    environment_check:
+      name: PAYER02_${bundle.target}_environment_check
+      tasks:
+        - task_key: check_catalog
+          notebook_task:
+            notebook_path: ../src/notebooks/00_environment_check.py
+            base_parameters:
+              target: ${bundle.target}
+              catalog: ${var.catalog}

@@ -1,0 +1,1682 @@
+{
+  "schema_version": "2.0",
+  "snapshot_steps": [
+    [
+      "reference_codes",
+      "specialty",
+      "network"
+    ],
+    [
+      "address_master"
+    ],
+    [
+      "product",
+      "benefit_plan",
+      "plan_network"
+    ],
+    [
+      "employer_group",
+      "employer_subgroup",
+      "plan_offering"
+    ],
+    [
+      "supplier",
+      "supplier_location"
+    ],
+    [
+      "practitioner",
+      "practitioner_specialty",
+      "practitioner_role"
+    ],
+    [
+      "network_participation",
+      "provider_contract",
+      "provider_contract_rate"
+    ],
+    [
+      "member_master",
+      "subscription",
+      "subscription_membership"
+    ],
+    [
+      "entity_address"
+    ],
+    [
+      "coverage",
+      "enrollment"
+    ],
+    [
+      "claim_header",
+      "claim_line",
+      "claim_status_event",
+      "claim_adjustment"
+    ],
+    [
+      "payment_remittance"
+    ]
+  ],
+  "sources": {
+    "reference_codes": {
+      "key": [
+        "code_set",
+        "code",
+        "effective_start_date"
+      ],
+      "business_columns": [
+        {
+          "name": "code_set",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "description",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "category",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "code_status",
+          "data_type": "string",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "monthly",
+      "source_system": "enterprise_reference"
+    },
+    "specialty": {
+      "key": [
+        "specialty_id"
+      ],
+      "business_columns": [
+        {
+          "name": "specialty_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "specialty_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "specialty_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "specialty_category",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "specialty_status",
+          "data_type": "string",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "monthly",
+      "source_system": "provider_master"
+    },
+    "network": {
+      "key": [
+        "network_id"
+      ],
+      "business_columns": [
+        {
+          "name": "network_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "network_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "network_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "network_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "network_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "monthly",
+      "source_system": "network_contract"
+    },
+    "address_master": {
+      "key": [
+        "address_id"
+      ],
+      "business_columns": [
+        {
+          "name": "address_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "address_line_1",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "address_line_2",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "city",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "state_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "postal_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "county_name",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "country_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "address_quality_code",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "latitude",
+          "data_type": "decimal(10,7)",
+          "required": false
+        },
+        {
+          "name": "longitude",
+          "data_type": "decimal(10,7)",
+          "required": false
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "daily",
+      "source_system": "address_management"
+    },
+    "product": {
+      "key": [
+        "product_id"
+      ],
+      "business_columns": [
+        {
+          "name": "product_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "product_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "product_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "line_of_business",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "product_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "product_status",
+          "data_type": "string",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "monthly",
+      "source_system": "product_group"
+    },
+    "benefit_plan": {
+      "key": [
+        "benefit_plan_id"
+      ],
+      "business_columns": [
+        {
+          "name": "benefit_plan_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "product_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "plan_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "plan_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "coverage_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "deductible_individual",
+          "data_type": "decimal(12,2)",
+          "required": true
+        },
+        {
+          "name": "deductible_family",
+          "data_type": "decimal(12,2)",
+          "required": true
+        },
+        {
+          "name": "oop_max_individual",
+          "data_type": "decimal(12,2)",
+          "required": true
+        },
+        {
+          "name": "oop_max_family",
+          "data_type": "decimal(12,2)",
+          "required": true
+        },
+        {
+          "name": "copay_primary_care",
+          "data_type": "decimal(12,2)",
+          "required": true
+        },
+        {
+          "name": "copay_specialist",
+          "data_type": "decimal(12,2)",
+          "required": true
+        },
+        {
+          "name": "coinsurance_pct",
+          "data_type": "decimal(5,2)",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "plan_status",
+          "data_type": "string",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "monthly",
+      "source_system": "product_group"
+    },
+    "plan_network": {
+      "key": [
+        "plan_network_id"
+      ],
+      "business_columns": [
+        {
+          "name": "plan_network_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "benefit_plan_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "network_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "network_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "mapping_status",
+          "data_type": "string",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "monthly",
+      "source_system": "network_contract"
+    },
+    "employer_group": {
+      "key": [
+        "employer_group_id"
+      ],
+      "business_columns": [
+        {
+          "name": "employer_group_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "group_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "group_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "group_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "industry_category",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "sponsor_state",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "group_status",
+          "data_type": "string",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "weekly",
+      "source_system": "product_group"
+    },
+    "employer_subgroup": {
+      "key": [
+        "employer_subgroup_id"
+      ],
+      "business_columns": [
+        {
+          "name": "employer_subgroup_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "employer_group_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "subgroup_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "subgroup_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "subgroup_category",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "subgroup_status",
+          "data_type": "string",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "weekly",
+      "source_system": "product_group"
+    },
+    "plan_offering": {
+      "key": [
+        "offering_id"
+      ],
+      "business_columns": [
+        {
+          "name": "offering_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "employer_group_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "employer_subgroup_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "benefit_plan_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "offering_scope",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "offering_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "offering_end_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "offering_status",
+          "data_type": "string",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "weekly",
+      "source_system": "product_group"
+    },
+    "supplier": {
+      "key": [
+        "supplier_id"
+      ],
+      "business_columns": [
+        {
+          "name": "supplier_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "organization_npi",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "supplier_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "supplier_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "tax_id_synthetic",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "supplier_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "weekly",
+      "source_system": "provider_master"
+    },
+    "supplier_location": {
+      "key": [
+        "supplier_location_id"
+      ],
+      "business_columns": [
+        {
+          "name": "supplier_location_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "supplier_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "location_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "location_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "facility_npi",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "location_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "weekly",
+      "source_system": "provider_master"
+    },
+    "practitioner": {
+      "key": [
+        "practitioner_id"
+      ],
+      "business_columns": [
+        {
+          "name": "practitioner_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "individual_npi",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "first_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "last_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "credential_code",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "practitioner_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "weekly",
+      "source_system": "provider_master"
+    },
+    "practitioner_specialty": {
+      "key": [
+        "practitioner_specialty_id"
+      ],
+      "business_columns": [
+        {
+          "name": "practitioner_specialty_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "practitioner_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "specialty_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "is_primary",
+          "data_type": "boolean",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "weekly",
+      "source_system": "provider_master"
+    },
+    "practitioner_role": {
+      "key": [
+        "practitioner_role_id"
+      ],
+      "business_columns": [
+        {
+          "name": "practitioner_role_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "practitioner_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "supplier_location_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "role_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "specialty_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "role_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "weekly",
+      "source_system": "provider_master"
+    },
+    "network_participation": {
+      "key": [
+        "participation_id"
+      ],
+      "business_columns": [
+        {
+          "name": "participation_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "network_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "participant_entity_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "participant_entity_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "supplier_location_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "participation_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "weekly",
+      "source_system": "network_contract"
+    },
+    "provider_contract": {
+      "key": [
+        "contract_id"
+      ],
+      "business_columns": [
+        {
+          "name": "contract_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "network_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "contract_entity_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "contract_entity_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "contract_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "contract_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "weekly",
+      "source_system": "network_contract"
+    },
+    "provider_contract_rate": {
+      "key": [
+        "contract_rate_id"
+      ],
+      "business_columns": [
+        {
+          "name": "contract_rate_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "contract_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "benefit_plan_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "procedure_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "modifier_code",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "place_of_service_code",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "negotiated_rate",
+          "data_type": "decimal(14,2)",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "weekly",
+      "source_system": "network_contract"
+    },
+    "member_master": {
+      "key": [
+        "member_id"
+      ],
+      "business_columns": [
+        {
+          "name": "member_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "first_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "last_name",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "birth_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "sex_code",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "member_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "household_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "death_date",
+          "data_type": "date",
+          "required": false
+        },
+        {
+          "name": "phone",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "email",
+          "data_type": "string",
+          "required": false
+        }
+      ],
+      "snapshot_format": "parquet",
+      "incremental_format": "parquet",
+      "cadence": "daily",
+      "source_system": "membership"
+    },
+    "subscription": {
+      "key": [
+        "subscription_id"
+      ],
+      "business_columns": [
+        {
+          "name": "subscription_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "subscriber_member_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "coverage_market",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "funding_arrangement",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "employer_group_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "employer_subgroup_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "subscription_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "subscription_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "subscription_end_date",
+          "data_type": "date",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "daily",
+      "source_system": "membership"
+    },
+    "subscription_membership": {
+      "key": [
+        "subscription_member_id"
+      ],
+      "business_columns": [
+        {
+          "name": "subscription_member_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "subscription_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "member_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "relationship_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "relationship_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "relationship_end_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "membership_status",
+          "data_type": "string",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "daily",
+      "source_system": "membership"
+    },
+    "entity_address": {
+      "key": [
+        "entity_address_id"
+      ],
+      "business_columns": [
+        {
+          "name": "entity_address_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "entity_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "entity_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "address_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "address_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "is_primary",
+          "data_type": "boolean",
+          "required": true
+        },
+        {
+          "name": "address_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "effective_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "effective_end_date",
+          "data_type": "date",
+          "required": true
+        }
+      ],
+      "snapshot_format": "csv",
+      "incremental_format": "json",
+      "cadence": "daily",
+      "source_system": "address_management"
+    },
+    "coverage": {
+      "key": [
+        "coverage_id"
+      ],
+      "business_columns": [
+        {
+          "name": "coverage_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "member_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "subscription_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "benefit_plan_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "coverage_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "coverage_end_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "coverage_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "termination_reason_code",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "coverage_revision",
+          "data_type": "int",
+          "required": true
+        }
+      ],
+      "snapshot_format": "parquet",
+      "incremental_format": "parquet",
+      "cadence": "daily",
+      "source_system": "membership"
+    },
+    "enrollment": {
+      "key": [
+        "enrollment_id"
+      ],
+      "business_columns": [
+        {
+          "name": "enrollment_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "coverage_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "member_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "coverage_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "coverage_end_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "enrollment_start_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "enrollment_end_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "tier_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "pcp_practitioner_role_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "change_reason_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "coverage_revision",
+          "data_type": "int",
+          "required": true
+        }
+      ],
+      "snapshot_format": "parquet",
+      "incremental_format": "parquet",
+      "cadence": "daily",
+      "source_system": "membership"
+    },
+    "claim_header": {
+      "key": [
+        "claim_id"
+      ],
+      "business_columns": [
+        {
+          "name": "claim_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "member_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "claim_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "service_from_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "service_to_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "received_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "adjudication_date",
+          "data_type": "date",
+          "required": false
+        },
+        {
+          "name": "billing_supplier_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "facility_location_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "primary_diagnosis_code",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "source_claim_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "original_claim_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "submitted_plan_id",
+          "data_type": "string",
+          "required": false
+        }
+      ],
+      "snapshot_format": "parquet",
+      "incremental_format": "parquet",
+      "cadence": "daily",
+      "source_system": "claims_adjudication"
+    },
+    "claim_line": {
+      "key": [
+        "claim_id",
+        "line_number"
+      ],
+      "business_columns": [
+        {
+          "name": "claim_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "line_number",
+          "data_type": "int",
+          "required": true
+        },
+        {
+          "name": "service_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "rendering_practitioner_role_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "procedure_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "modifier_code",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "units",
+          "data_type": "decimal(10,2)",
+          "required": true
+        },
+        {
+          "name": "billed_amount",
+          "data_type": "decimal(14,2)",
+          "required": true
+        },
+        {
+          "name": "allowed_amount",
+          "data_type": "decimal(14,2)",
+          "required": true
+        },
+        {
+          "name": "member_responsibility_amount",
+          "data_type": "decimal(14,2)",
+          "required": true
+        },
+        {
+          "name": "payer_liability_amount",
+          "data_type": "decimal(14,2)",
+          "required": true
+        },
+        {
+          "name": "adjudication_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "denial_reason_code",
+          "data_type": "string",
+          "required": false
+        }
+      ],
+      "snapshot_format": "parquet",
+      "incremental_format": "parquet",
+      "cadence": "daily",
+      "source_system": "claims_adjudication"
+    },
+    "claim_status_event": {
+      "key": [
+        "claim_status_event_id"
+      ],
+      "business_columns": [
+        {
+          "name": "claim_status_event_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "claim_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "status_code",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "status_reason_code",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "status_effective_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "event_ts",
+          "data_type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "source_sequence",
+          "data_type": "bigint",
+          "required": true
+        }
+      ],
+      "snapshot_format": null,
+      "incremental_format": "json",
+      "cadence": "twice_daily",
+      "source_system": "claims_adjudication"
+    },
+    "claim_adjustment": {
+      "key": [
+        "adjustment_id"
+      ],
+      "business_columns": [
+        {
+          "name": "adjustment_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "claim_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "line_number",
+          "data_type": "int",
+          "required": true
+        },
+        {
+          "name": "adjustment_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "adjustment_reason_code",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "allowed_amount_delta",
+          "data_type": "decimal(14,2)",
+          "required": true
+        },
+        {
+          "name": "member_responsibility_delta",
+          "data_type": "decimal(14,2)",
+          "required": true
+        },
+        {
+          "name": "payer_liability_delta",
+          "data_type": "decimal(14,2)",
+          "required": true
+        },
+        {
+          "name": "adjustment_effective_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "event_ts",
+          "data_type": "timestamp",
+          "required": true
+        },
+        {
+          "name": "reversal_of_adjustment_id",
+          "data_type": "string",
+          "required": false
+        }
+      ],
+      "snapshot_format": null,
+      "incremental_format": "json",
+      "cadence": "daily",
+      "source_system": "claims_adjudication"
+    },
+    "payment_remittance": {
+      "key": [
+        "remittance_transaction_id"
+      ],
+      "business_columns": [
+        {
+          "name": "remittance_transaction_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "remittance_batch_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "payment_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "claim_id",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "line_number",
+          "data_type": "int",
+          "required": true
+        },
+        {
+          "name": "payee_supplier_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "payment_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "posted_date",
+          "data_type": "date",
+          "required": true
+        },
+        {
+          "name": "transaction_type",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "payment_amount",
+          "data_type": "decimal(14,2)",
+          "required": true
+        },
+        {
+          "name": "payment_status",
+          "data_type": "string",
+          "required": true
+        },
+        {
+          "name": "original_transaction_id",
+          "data_type": "string",
+          "required": false
+        },
+        {
+          "name": "currency_code",
+          "data_type": "string",
+          "required": true
+        }
+      ],
+      "snapshot_format": null,
+      "incremental_format": "csv",
+      "cadence": "daily",
+      "source_system": "finance_payments"
+    }
+  }
+}

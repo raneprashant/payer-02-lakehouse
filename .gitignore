@@ -1,0 +1,23 @@
+# Local Python environment and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+*.egg-info/
+dist/
+build/
+# Databricks CLI bundle local deployment state (NEVER commit)
+.databricks/
+# Local outputs and IDE clutter
+output/
+logs/
+.DS_Store
+Thumbs.db
+# Sensitive local configuration
+.env
+.env.*
+!.env.example
+# Private notes can go here; do not ship to workspace
+.docs/
