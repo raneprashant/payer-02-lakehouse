@@ -1,0 +1,46 @@
+resources:
+  jobs:
+    bronze_master_load:
+      name: PAYER02_${bundle.target}_bronze_master
+      max_concurrent_runs: 1
+
+      tasks:
+        - task_key: run_reference_network
+          run_job_task:
+            job_id: ${resources.jobs.bronze_reference_code_network_load.id}
+
+        - task_key: run_address_entity
+          depends_on:
+            - task_key: run_reference_network
+          run_job_task:
+            job_id: ${resources.jobs.bronze_address_entity_load.id}
+
+        - task_key: run_product_plan
+          depends_on:
+            - task_key: run_address_entity
+          run_job_task:
+            job_id: ${resources.jobs.bronze_product_plan_load.id}
+
+        - task_key: run_provider_contracts
+          depends_on:
+            - task_key: run_product_plan
+          run_job_task:
+            job_id: ${resources.jobs.bronze_provider_contracts_load.id}
+
+        - task_key: run_member_eligibility
+          depends_on:
+            - task_key: run_provider_contracts
+          run_job_task:
+            job_id: ${resources.jobs.bronze_member_eligibility_load.id}
+
+        - task_key: run_claims
+          depends_on:
+            - task_key: run_member_eligibility
+          run_job_task:
+            job_id: ${resources.jobs.bronze_claims_load.id}
+
+        - task_key: run_claims_finance_events
+          depends_on:
+            - task_key: run_claims
+          run_job_task:
+            job_id: ${resources.jobs.bronze_claims_finance_events_load.id}

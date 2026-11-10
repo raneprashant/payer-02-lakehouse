@@ -23,6 +23,13 @@ workspace:
   # Uses current authenticated user. Distinct target roots within one workspace.
   root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
 
+artifacts:
+  payer_lakehouse:
+    type: whl
+    build: python -m build --wheel
+    dynamic_version: true
+    path: .
+
 targets:
   dev:
     default: true

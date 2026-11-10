@@ -1,0 +1,389 @@
+resources:
+  jobs:
+    bronze_provider_contracts_load:
+      name: PAYER02_${bundle.target}_bronze_provider_contracts
+      max_concurrent_runs: 1
+
+##************************** SNAPSHOT load tasks ********************************
+      tasks:
+      ##load practitioner_snapshot
+        - task_key: load_practitioner_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "practitioner"
+
+        ##load practitioner_specialty
+        - task_key: load_practitioner_specialty_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_practitioner_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "practitioner_specialty"
+
+
+        ##load practitioner_role
+        - task_key: load_practitioner_role_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_practitioner_specialty_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "practitioner_role"
+
+        ##load supplier,
+        - task_key: load_supplier_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_practitioner_role_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "supplier"
+
+        ##load supplier location
+        - task_key: load_supplier_location_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_supplier_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "supplier_location"
+
+        ##load network_participation
+        - task_key: load_network_participation_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_supplier_location_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "network_participation"
+
+
+        ##load provider_contract
+        - task_key: load_provider_contract_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_network_participation_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "provider_contract"
+
+
+        ##load provider_contract
+        - task_key: load_provider_contract_rate_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_provider_contract_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "provider_contract_rate"
+
+
+      ##************************** CDC load tasks ********************************
+
+        - task_key: load_practitioner_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_provider_contract_rate_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "practitioner"
+
+        ##load practitioner_specialty
+        - task_key: load_practitioner_specialty_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_practitioner_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "practitioner_specialty"
+
+
+        ##load practitioner_role
+        - task_key: load_practitioner_role_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_practitioner_specialty_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "practitioner_role"
+
+        ##load supplier,
+        - task_key: load_supplier_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_practitioner_role_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "supplier"
+
+        ##load supplier location
+        - task_key: load_supplier_location_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_supplier_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "supplier_location"
+
+        ##load network_participation
+        - task_key: load_network_participation_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_supplier_location_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "network_participation"
+
+
+        ##load provider_contract
+        - task_key: load_provider_contract_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_network_participation_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "provider_contract"
+
+
+        ##load provider_contract
+        - task_key: load_provider_contract_rate_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_provider_contract_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "provider_contract_rate"
+
+      environments:
+        - environment_key: default
+
+          spec:
+            environment_version: "5"
+            dependencies: 
+              - "../dist/*.whl"
+

@@ -1,0 +1,248 @@
+resources:
+  jobs:
+    bronze_member_eligibility_load:
+      name: PAYER02_${bundle.target}_bronze_member_eligibility
+      max_concurrent_runs: 1
+
+      tasks:
+## *************** member and eligibility domain - SNAPSHOT ******************
+# Member master snapshot
+        - task_key: load_member_master_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "member_master"
+
+
+# Subscription snapshot
+        - task_key: load_subscription_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_member_master_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "subscription"
+
+# Subscription_membership snapshot 
+        - task_key: load_subscription_membership_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_subscription_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "subscription_membership"
+
+
+# coverage snapshot 
+        - task_key: load_coverage_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_subscription_membership_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "coverage"
+
+
+# enrollment snapshot 
+        - task_key: load_enrollment_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_coverage_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "enrollment"
+
+## *************** member and eligibility domain - CDC  ******************
+# Member master snapshot
+        - task_key: load_member_master_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_enrollment_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "member_master"
+
+
+# Subscription snapshot
+        - task_key: load_subscription_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_member_master_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "subscription"
+
+# Subscription_membership snapshot 
+        - task_key: load_subscription_membership_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_subscription_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "subscription_membership"
+
+
+# coverage snapshot 
+        - task_key: load_coverage_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_subscription_membership_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "coverage"
+
+
+# enrollment snapshot 
+        - task_key: load_enrollment_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_coverage_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "enrollment"
+
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "5"
+            dependencies:
+              - "../dist/*.whl"
