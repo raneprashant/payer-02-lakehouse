@@ -1,0 +1,152 @@
+resources:
+  jobs:
+    bronze_reference_code_network_load:
+      name: PAYER02_${bundle.target}_bronze_reference_code_network
+      max_concurrent_runs: 1
+
+## Load Snapshot files in reference, code and network domain. 
+      tasks:
+        - task_key: load_reference_codes_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "reference_codes"
+
+        - task_key: load_specialty_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_reference_codes_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "specialty"
+
+        - task_key: load_network_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_specialty_snapshot
+
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "network"
+
+## Load CDC files in reference, code and network domain. 
+
+        - task_key: load_reference_codes_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_network_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "reference_codes"
+
+        - task_key: load_specialty_cdc
+          environment_key: default
+          
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_reference_codes_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "specialty"
+
+        - task_key: load_network_cdc
+          environment_key: default
+          
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_specialty_cdc
+
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "network"
+
+      environments:
+        - environment_key: default
+
+          spec:
+            environment_version : "5"
+            dependencies:
+              - "../dist/*.whl"
+
+
+
+

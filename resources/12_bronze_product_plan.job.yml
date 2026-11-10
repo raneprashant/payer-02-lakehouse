@@ -1,0 +1,283 @@
+resources:
+  jobs:
+    bronze_product_plan_load:
+      name: PAYER02_${bundle.target}_bronze_product_plan
+      max_concurrent_runs: 1
+
+## Load Snapshot files in Product and Plan domain. 
+
+      tasks:
+        - task_key: load_product_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "product"
+      
+        - task_key: load_benefit_plan_snapshot
+          depends_on:
+            - task_key: load_product_snapshot
+
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "benefit_plan"  
+
+        - task_key: load_employer_group_snapshot
+          depends_on:
+            - task_key: load_benefit_plan_snapshot
+
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "employer_group"  
+
+
+        - task_key: load_employer_subgroup_snapshot
+          depends_on:
+            - task_key: load_employer_group_snapshot
+
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "employer_subgroup"  
+
+        - task_key: load_plan_offering_snapshot
+          depends_on:
+            - task_key: load_employer_subgroup_snapshot
+
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "plan_offering"  
+
+
+        - task_key: load_plan_network_snapshot
+          depends_on:
+            - task_key: load_plan_offering_snapshot
+            
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "plan_network"  
+
+## Load CDC files in Product and Plan domain. 
+
+        - task_key: load_product_cdc
+          depends_on:
+            - task_key: load_plan_network_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "product"
+      
+        - task_key: load_benefit_plan_cdc
+          depends_on:
+            - task_key: load_product_cdc
+
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "benefit_plan"  
+
+        - task_key: load_employer_group_cdc
+          depends_on:
+            - task_key: load_benefit_plan_cdc
+
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "employer_group"  
+
+
+        - task_key: load_employer_subgroup_cdc
+          depends_on:
+            - task_key: load_employer_group_cdc
+
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "employer_subgroup"  
+
+        - task_key: load_plan_offering_cdc
+          depends_on:
+            - task_key: load_employer_subgroup_cdc
+
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "plan_offering"  
+
+
+        - task_key: load_plan_network_cdc
+          depends_on:
+            - task_key: load_plan_offering_cdc
+            
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "plan_network"              
+
+            
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "5"
+            dependencies:
+              - ../dist/*.whl
+

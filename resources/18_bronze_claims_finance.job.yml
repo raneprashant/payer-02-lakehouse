@@ -1,0 +1,84 @@
+resources:
+  jobs:
+    bronze_claims_finance_events_load:
+      name: PAYER02_${bundle.target}_bronze_claims_finance
+      max_concurrent_runs: 1
+
+      tasks:
+## *************** Finance - events ******************
+# Member master snapshot
+        - task_key: load_claim_status_events
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/12_bronze_events.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "claim_status_event"
+
+
+# Subscription snapshot
+        - task_key: load_claim_adjustment_events
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_claim_status_events
+
+          spark_python_task:
+            python_file: ../src/jobs/12_bronze_events.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "claim_adjustment"
+
+## *************** Claims  - CDC  ******************
+# Member master snapshot
+        - task_key: load_payment_remittance_events
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_claim_adjustment_events
+
+
+          spark_python_task:
+            python_file: ../src/jobs/12_bronze_events.py
+            parameters:
+            - "--target"
+            - "${bundle.target}"
+            
+            - "--catalog"
+            - "${var.catalog}"
+            
+            - "--entity"
+            - "payment_remittance"
+
+
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "5"
+            dependencies:
+              - "../dist/*.whl"
