@@ -1,6 +1,7 @@
-from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.streaming import StreamingQuery
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
+from pyspark.sql.streaming import StreamingQuery
+
 
 def parquet_reader(spark: SparkSession, source_path: str, schema_path:str, file_pattern:str) -> DataFrame:
     df =(

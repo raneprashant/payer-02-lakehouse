@@ -1,7 +1,7 @@
 """Centralized, testable Unity Catalog path conventions (no Spark dependency)."""
 
-from dataclasses import dataclass
 import re
+from dataclasses import dataclass
 
 _IDENT = re.compile(r"^[a-z][a-z0-9_]*$")
 _ALLOWED_TARGET_CATALOGS = {
