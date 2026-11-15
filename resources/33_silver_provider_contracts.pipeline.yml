@@ -1,0 +1,23 @@
+
+resources:
+  pipelines:
+    silver_provider_contracts:
+      name: PAYER02_${bundle.target}_silver_provider_contracts
+
+      catalog: ${var.catalog}
+      schema: silver
+
+      serverless: true
+
+      configuration:
+        source_catalog: ${var.catalog}
+        pipelines.numUpdateRetryAttempts: "0"
+        pipelines.maxFlowRetryAttempts: "0"
+
+      environment:
+        dependencies:
+          - "../dist/*.whl"
+
+      libraries:
+        - file:
+            path: ../src/pipelines/silver_conformed/04_provider_contracts.py
