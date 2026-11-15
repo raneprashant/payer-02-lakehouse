@@ -1,0 +1,40 @@
+
+resources:
+  pipelines:
+    gold_aggregates:
+      name: PAYER02_${bundle.target}_gold_aggregates
+
+      catalog: ${var.catalog}
+      schema: gold
+      serverless: true
+
+      configuration:
+        source_catalog: ${var.catalog}
+        pipelines.numUpdateRetryAttempts: "0"
+        pipelines.maxFlowRetryAttempts: "0"
+
+      libraries:
+        - file:
+            path: ../src/pipelines/gold_aggregates/01_agg_claim_cost_monthly.sql
+        - file:
+            path: ../src/pipelines/gold_aggregates/02_agg_pmpm.sql
+        - file:
+            path: ../src/pipelines/gold_aggregates/03_agg_denial_rate.sql
+        - file:
+            path: ../src/pipelines/gold_aggregates/04_agg_payment_reconciliation.sql
+        - file:
+            path: ../src/pipelines/gold_aggregates/05_agg_paid_cash_monthly.sql
+        - file:
+            path: ../src/pipelines/gold_aggregates/06_agg_coverage_membership_monthly.sql
+        - file:
+            path: ../src/pipelines/gold_aggregates/07_agg_family_composition_monthly.sql
+        - file:
+            path: ../src/pipelines/gold_aggregates/08_agg_provider_network_utilization.sql
+        - file:
+            path: ../src/pipelines/gold_aggregates/09_agg_provider_contract_variance.sql
+        - file:
+            path: ../src/pipelines/gold_aggregates/10_agg_claim_turnaround_monthly.sql
+        - file:
+            path: ../src/pipelines/gold_aggregates/11_agg_claim_adjustment_trend.sql
+        - file:
+            path: ../src/pipelines/gold_aggregates/12_agg_retro_eligibility_impact.sql
