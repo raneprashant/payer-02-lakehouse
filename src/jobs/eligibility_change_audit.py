@@ -14,8 +14,8 @@ import argparse
 import uuid
 
 from delta.tables import DeltaTable
-from pyspark.sql import SparkSession, Window, functions as F
-
+from pyspark.sql import SparkSession, Window
+from pyspark.sql import functions as F
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--catalog", required=True)

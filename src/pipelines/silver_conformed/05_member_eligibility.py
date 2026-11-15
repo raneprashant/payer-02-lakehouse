@@ -8,15 +8,15 @@
 #)
 
 
-from payer_lakehouse.silver.cdc_helpers import (
-    prepare_cdc,
-    cdc_sequence,
-)
-
-from payer_lakehouse.silver.entity_config import get_entity_config
-
 from pyspark import pipelines as dp
-from pyspark.sql import SparkSession, functions as F
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+from payer_lakehouse.silver.cdc_helpers import (
+    cdc_sequence,
+    prepare_cdc,
+)
+from payer_lakehouse.silver.entity_config import get_entity_config
 
 # ============================================================
 # PAYER 360 - SILVER CONFORMED
@@ -192,14 +192,12 @@ dp.create_auto_cdc_flow(
 # REMAINING MEMBERSHIP & ELIGIBILITY ENTITIES
 # ============================================================
 
-from payer_lakehouse.silver.entity_config import (
-    get_entity_config,
-    ENTITY_BUSINESS_COLUMNS,
-)
-
 from payer_lakehouse.silver.cdc_helpers import (
-    prepare_cdc,
     cdc_sequence,
+)
+from payer_lakehouse.silver.entity_config import (
+    ENTITY_BUSINESS_COLUMNS,
+    get_entity_config,
 )
 
 

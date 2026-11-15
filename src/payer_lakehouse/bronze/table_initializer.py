@@ -2,11 +2,13 @@
 import fnmatch
 import os
 
-from payer_lakehouse.bronze.snapshot_config import SNAPSHOT_CONFIG
 from payer_lakehouse.bronze.cdc_config import CDC_CONFIG
 from payer_lakehouse.bronze.event_config import EVENT_CONFIG
+from payer_lakehouse.bronze.snapshot_config import SNAPSHOT_CONFIG
 from payer_lakehouse.bronze.source_contracts import (
-    BUSINESS, expected_schema, expected_source_columns,
+    BUSINESS,
+    expected_schema,
+    expected_source_columns,
 )
 
 

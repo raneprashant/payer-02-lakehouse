@@ -14,7 +14,8 @@
 # ============================================================
 
 from pyspark import pipelines as dp
-from pyspark.sql import SparkSession, functions as F
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
 
 spark = SparkSession.builder.getOrCreate()
 

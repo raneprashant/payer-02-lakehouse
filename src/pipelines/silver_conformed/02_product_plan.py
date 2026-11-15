@@ -1,14 +1,15 @@
 
 from pyspark import pipelines as dp
-from pyspark.sql import SparkSession, functions as F
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
 
 from payer_lakehouse.silver.cdc_helpers import (
-    prepare_cdc,
     cdc_sequence,
+    prepare_cdc,
 )
 from payer_lakehouse.silver.entity_config import (
-    get_entity_config,
     ENTITY_BUSINESS_COLUMNS,
+    get_entity_config,
 )
 
 # ============================================================

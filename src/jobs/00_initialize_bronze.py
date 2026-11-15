@@ -1,5 +1,7 @@
 import argparse
+
 from pyspark.sql import SparkSession
+
 from payer_lakehouse.bronze.table_initializer import run
 
 parser = argparse.ArgumentParser()

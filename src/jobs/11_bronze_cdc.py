@@ -1,8 +1,9 @@
-import payer_lakehouse.bronze.ingestion as ingestion
-import payer_lakehouse.bronze.cdc_config as cdc_config
+import argparse
 import uuid
-import argparse 
+
 from pyspark.sql import SparkSession
+
+from payer_lakehouse.bronze import cdc_config, ingestion
 
 parser = argparse.ArgumentParser()
 
@@ -60,8 +61,8 @@ spark = SparkSession.builder.getOrCreate()
 
 ## check if file is present if not just exit without failure 
 
-import os
 import fnmatch
+import os
 
 try:
     has_files = any(

@@ -4,15 +4,20 @@ CSV/JSON fields default to STRING with the current Auto Loader readers.
 Parquet uses source logical types from the approved blueprint.
 No .schema() is passed to Auto Loader; contracts govern table bootstrap.
 """
-from pyspark.sql.types import (
-    StructField, StructType, StringType,
-    DateType, TimestampType, TimestampNTZType,
-    LongType, IntegerType, BooleanType, DecimalType
-)
-
 import re
 
-
+from pyspark.sql.types import (
+    BooleanType,
+    DateType,
+    DecimalType,
+    IntegerType,
+    LongType,
+    StringType,
+    StructField,
+    StructType,
+    TimestampNTZType,
+    TimestampType,
+)
 
 # Each entry is column_name:Spark-SQL-type, separated by whitespace.
 # This includes all 29 entities from Blueprint v2.0 §06.
