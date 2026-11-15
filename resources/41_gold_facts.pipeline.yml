@@ -1,0 +1,36 @@
+
+resources:
+  pipelines:
+    gold_facts:
+      name: PAYER02_${bundle.target}_gold_facts
+
+      catalog: ${var.catalog}
+      schema: gold
+      serverless: true
+
+      configuration:
+        source_catalog: ${var.catalog}
+        pipelines.numUpdateRetryAttempts: "0"
+        pipelines.maxFlowRetryAttempts: "0"
+
+
+
+      libraries:
+        - file:
+            path: ../src/pipelines/gold_facts/01_fact_claim_line.sql
+        - file:
+            path: ../src/pipelines/gold_facts/02_fact_claim_payment.sql
+        - file:
+            path: ../src/pipelines/gold_facts/03_fact_claim_adjustment.sql
+        - file:
+            path: ../src/pipelines/gold_facts/04_fact_claim_status_event.sql
+        - file:
+            path: ../src/pipelines/gold_facts/05_fact_claim_eligibility_validation.sql
+        - file:
+            path: ../src/pipelines/gold_facts/06_fact_member_enrollment_change.sql
+        - file:
+            path: ../src/pipelines/gold_facts/07_fact_member_coverage_month.sql
+        - file:
+            path: ../src/pipelines/gold_facts/08_fact_subscription_member_month.sql
+
+
