@@ -1,0 +1,23 @@
+
+resources:
+  pipelines:
+    silver_product_plan:
+      name: PAYER02_${bundle.target}_silver_product_plan
+
+      catalog: ${var.catalog}
+      schema: silver
+
+      serverless: true
+
+      configuration:
+        source_catalog: ${var.catalog}
+        pipelines.numUpdateRetryAttempts: "0"
+        pipelines.maxFlowRetryAttempts: "0"
+
+      environment:
+        dependencies:
+          - "../dist/*.whl"
+
+      libraries:
+        - file:
+            path: ../src/pipelines/silver_conformed/02_product_plan.py

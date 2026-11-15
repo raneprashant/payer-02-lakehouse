@@ -11,6 +11,7 @@ def parquet_reader(spark: SparkSession, source_path: str, schema_path:str, file_
         .option("pathGlobFilter", file_pattern)
         .option("cloudFiles.schemaLocation", schema_path)
         .option("cloudFiles.schemaEvolutionMode", "addNewColumns")
+        .option("rescuedDataColumn", "_rescued_data")
         .load(source_path)
     )
     return df
@@ -24,6 +25,7 @@ def json_reader(spark: SparkSession, source_path: str, schema_path:str, file_pat
         .option("pathGlobFilter", file_pattern)
         .option("cloudFiles.schemaLocation", schema_path)
         .option("cloudFiles.schemaEvolutionMode", "addNewColumns")
+        .option("rescuedDataColumn", "_rescued_data")
         .load(source_path)
     )
     return df
@@ -38,6 +40,7 @@ def csv_reader(spark: SparkSession, source_path: str, schema_path:str, file_patt
         .option("pathGlobFilter", file_pattern)
         .option("cloudFiles.schemaLocation", schema_path)
         .option("cloudFiles.schemaEvolutionMode", "addNewColumns")
+        .option("rescuedDataColumn", "_rescued_data")
         .load(source_path)
     )
     return df

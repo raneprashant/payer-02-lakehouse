@@ -1,0 +1,59 @@
+
+# ============================================================
+# PAYER 360 - SILVER MASTER JOB
+#
+# Orchestrates 6 physical Lakeflow pipelines sequentially.
+# Each domain pipeline handles its own Conformed and
+# Derived tables.
+#
+# Incremental execution - no Full Refresh.
+# ============================================================
+
+resources:
+  jobs:
+    silver_conformed_derived_master:
+      name: PAYER02_${bundle.target}_silver_master
+
+      max_concurrent_runs: 1
+
+      tasks:
+
+        # 01 - Reference & Network
+        - task_key: reference_network
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.silver_reference_network.id}
+
+        # 02 - Product & Plan
+        - task_key: product_plan
+          depends_on:
+            - task_key: reference_network
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.silver_product_plan.id}
+
+        # 03 - Address & Entity
+        - task_key: address_entity
+          depends_on:
+            - task_key: product_plan
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.silver_address_entity.id}
+
+        # 04 - Provider & Contracts
+        - task_key: provider_contracts
+          depends_on:
+            - task_key: address_entity
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.silver_provider_contracts.id}
+
+        # 05 - Membership & Eligibility
+        - task_key: member_eligibility
+          depends_on:
+            - task_key: provider_contracts
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.silver_member_eligibility.id}
+
+        # 06 - Claims & Finance
+        - task_key: claims_finance
+          depends_on:
+            - task_key: member_eligibility
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.silver_claims_finance.id}

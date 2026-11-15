@@ -5,13 +5,25 @@ resources:
       max_concurrent_runs: 1
 
       tasks:
+        - task_key: initialize_bronze
+          run_job_task:
+            job_id: ${resources.jobs.bronze_initialize_tables.id}
+
         - task_key: run_reference_network
+          depends_on:
+            - task_key: initialize_bronze
           run_job_task:
             job_id: ${resources.jobs.bronze_reference_code_network_load.id}
 
         - task_key: run_address_entity
           depends_on:
-            - task_key: run_reference_network
+            - task_key: initialize_bronze
+          run_job_task:
+            job_id: ${resources.jobs.bronze_initialize_tables.id}
+
+        - task_key: run_reference_network
+          depends_on:
+            - task_key: initialize_bronze
           run_job_task:
             job_id: ${resources.jobs.bronze_address_entity_load.id}
 

@@ -1,0 +1,26 @@
+
+resources:
+  pipelines:
+    silver_member_eligibility:
+      name: PAYER02_${bundle.target}_silver_member_eligibility
+
+      catalog: ${var.catalog}
+      schema: silver
+
+      serverless: true
+
+      environment:
+        dependencies:
+          - "../dist/*.whl"
+
+      configuration:
+        source_catalog: ${var.catalog}
+        pipelines.numUpdateRetryAttempts: "0"
+        pipelines.maxFlowRetryAttempts: "0"
+
+      libraries:
+        - file:
+            path: ../src/pipelines/silver_conformed/05_member_eligibility.py
+
+        - file:
+            path: ../src/pipelines/silver_derived/05_member_eligibility_derived.py

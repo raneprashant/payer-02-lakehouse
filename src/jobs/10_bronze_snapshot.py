@@ -1,8 +1,9 @@
-import payer_lakehouse.bronze.ingestion as ingestion
-import payer_lakehouse.bronze.snapshot_config as snapshot_config
+import argparse
 import uuid
-import argparse 
+
 from pyspark.sql import SparkSession
+
+from payer_lakehouse.bronze import ingestion, snapshot_config
 
 parser = argparse.ArgumentParser()
 

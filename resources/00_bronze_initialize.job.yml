@@ -1,0 +1,24 @@
+resources:
+  jobs:
+    bronze_initialize_tables:
+      name: PAYER02_${bundle.target}_bronze_initialize_tables
+      max_concurrent_runs: 1
+      tasks:
+        - task_key: initialize_bronze
+          environment_key: default
+          spark_python_task:
+            python_file: ../src/jobs/00_initialize_bronze.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+              - "--catalog"
+              - "${var.catalog}"
+              - "--mode"
+              - "apply"
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "5"
+            dependencies:
+              - "../dist/*.whl"
+
