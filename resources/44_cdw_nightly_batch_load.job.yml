@@ -1,0 +1,41 @@
+
+resources:
+  jobs:
+    cdw_nightly_batch_load:
+      name: PAYER02_${bundle.target}_cdw_nightly_batch_load
+      max_concurrent_runs: 1
+
+      # Example: 2 AM Eastern nightly.
+      # Keep paused until end-to-end testing succeeds.
+      schedule:
+        quartz_cron_expression: "0 0 2 * * ?"
+        timezone_id: America/New_York
+        pause_status: PAUSED
+
+      tasks:
+
+        # 1. Bronze Master
+        - task_key: bronze_master
+          run_job_task:
+            job_id: ${resources.jobs.bronze_master_load.id}
+
+        # 2. Silver Master
+        - task_key: silver_master
+          depends_on:
+            - task_key: bronze_master
+          run_job_task:
+            job_id: ${resources.jobs.silver_conformed_derived_master.id}
+
+        # 3. Eligibility Change Audit
+        - task_key: eligibility_audit
+          depends_on:
+            - task_key: silver_master
+          run_job_task:
+            job_id: ${resources.jobs.silver_eligibility_change_audit.id}
+
+        # 4. Gold Master
+        - task_key: gold_master
+          depends_on:
+            - task_key: eligibility_audit
+          run_job_task:
+            job_id: ${resources.jobs.gold_master.id}
