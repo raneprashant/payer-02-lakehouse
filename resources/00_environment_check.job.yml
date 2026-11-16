@@ -4,10 +4,20 @@ resources:
   jobs:
     environment_check:
       name: PAYER02_${bundle.target}_environment_check
+
       tasks:
         - task_key: check_catalog
-          notebook_task:
-            notebook_path: ../src/notebooks/00_environment_check.py
-            base_parameters:
-              target: ${bundle.target}
-              catalog: ${var.catalog}
+          environment_key: default
+
+          spark_python_task:
+            python_file: ../src/jobs/00_environment_check.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+              - "--catalog"
+              - "${var.catalog}"
+
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "5"

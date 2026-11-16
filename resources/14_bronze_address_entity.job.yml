@@ -1,0 +1,108 @@
+resources:
+  jobs:
+    bronze_address_entity_load:
+      name: PAYER02_${bundle.target}_bronze_address_entity
+      max_concurrent_runs: 1
+
+      tasks:
+## Tasks to load Snapshot files for address master and address entity snapshot 
+        - task_key: load_address_master_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "address_master"
+
+        - task_key: load_entity_address_snapshot
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_address_master_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/10_bronze_snapshot.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "entity_address"
+
+## Tasks to load CDC  files for address master and address entity 
+
+        - task_key: load_address_master_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_entity_address_snapshot
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "address_master"
+
+        - task_key: load_entity_address_cdc
+          environment_key: default
+
+          max_retries: 2
+          min_retry_interval_millis: 60000
+          retry_on_timeout: false
+
+          depends_on:
+            - task_key: load_address_master_cdc
+
+          spark_python_task:
+            python_file: ../src/jobs/11_bronze_cdc.py
+            parameters:
+              - "--target"
+              - "${bundle.target}"
+
+              - "--catalog"
+              - "${var.catalog}"
+
+              - "--entity"
+              - "entity_address"
+
+      environments:
+        - environment_key: default
+
+          spec: 
+            environment_version: "5"
+            dependencies:
+              - "../dist/*.whl"
+
+
+
+
+
+

@@ -1,0 +1,26 @@
+
+resources:
+  pipelines:
+    silver_claims_finance:
+      name: PAYER02_${bundle.target}_silver_claims_finance
+
+      catalog: ${var.catalog}
+      schema: silver
+
+      serverless: true
+
+      configuration:
+        source_catalog: ${var.catalog}
+        pipelines.numUpdateRetryAttempts: "0"
+        pipelines.maxFlowRetryAttempts: "0"
+
+      environment:
+        dependencies:
+          - "../dist/*.whl"
+
+      libraries:
+        - file:
+            path: ../src/pipelines/silver_conformed/06_claims_finance.py
+
+        - file:
+            path: ../src/pipelines/silver_derived/06_claims_finance_derived.py

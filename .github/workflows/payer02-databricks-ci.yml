@@ -1,0 +1,98 @@
+
+name: PAYER02 - CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - release
+      - main
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+
+  # =========================================
+  # JOB 1 - BRANCH PROMOTION VALIDATION
+  # =========================================
+  promotion-gate:
+    name: Promotion Gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate branch promotion
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref }}
+          TARGET_BRANCH: ${{ github.base_ref }}
+          SOURCE_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if [[ "$SOURCE_REPO" != "$GITHUB_REPOSITORY" ]]; then
+            echo "::error::PR must come from this repository"
+            exit 1
+          fi
+
+          case "$TARGET_BRANCH:$SOURCE_BRANCH" in
+            develop:feature/*)
+              echo "Valid promotion: Feature -> DEV"
+              ;;
+            release:develop)
+              echo "Valid promotion: DEV -> TEST"
+              ;;
+            main:release)
+              echo "Valid promotion: TEST -> PROD"
+              ;;
+            *)
+              echo "::error::Invalid promotion: $SOURCE_BRANCH -> $TARGET_BRANCH"
+              exit 1
+              ;;
+          esac
+
+  # =========================================
+  # JOB 2 - CODE QUALITY
+  # Runs ONLY if promotion-gate passes
+  # =========================================
+  python-quality:
+    name: Python Quality
+    needs: promotion-gate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]" pyyaml
+
+      - name: Ruff lint
+        run: python -m ruff check .
+
+      - name: Pytest
+        run: python -m pytest -v
+
+      - name: Validate bundle YAML
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          files = [
+              Path("databricks.yml"),
+              *Path("resources").rglob("*.yml")
+          ]
+
+          for file in files:
+              with file.open(encoding="utf-8") as stream:
+                  yaml.safe_load(stream)
+              print(f"Valid: {file}")
+
+          print("All YAML files validated")
+          PY
