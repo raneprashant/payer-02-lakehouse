@@ -76,7 +76,7 @@ jobs:
         run: python -m ruff check .
 
       - name: Pytest
-        run: python -m pytest tests/member/unit -v
+        run: python -m pytest -v
 
       - name: Validate bundle YAML
         run: |
