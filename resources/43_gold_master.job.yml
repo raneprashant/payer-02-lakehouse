@@ -1,0 +1,28 @@
+
+resources:
+  jobs:
+    gold_master:
+      name: PAYER02_${bundle.target}_gold_master
+      max_concurrent_runs: 1
+
+      tasks:
+
+        # 1. Gold Dimensions - 15 tables
+        - task_key: gold_dimensions
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.gold_dimensions.id}
+
+        # 2. Gold Facts - 8 tables
+        - task_key: gold_facts
+          depends_on:
+            - task_key: gold_dimensions
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.gold_facts.id}
+
+        # 3. Gold Aggregates - 12 tables
+        - task_key: gold_aggregates
+          depends_on:
+            - task_key: gold_facts
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.gold_aggregates.id}
+
