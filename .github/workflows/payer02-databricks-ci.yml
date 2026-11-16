@@ -7,27 +7,21 @@ on:
       - develop
       - release
       - main
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - edited
-      - ready_for_review
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read
 
 jobs:
-  ci-validation:
-    name: CI - Promotion and Quality
+
+  # =========================================
+  # JOB 1 - BRANCH PROMOTION VALIDATION
+  # =========================================
+  promotion-gate:
+    name: Promotion Gate
     runs-on: ubuntu-latest
-    timeout-minutes: 15
 
     steps:
-
-      # -----------------------------------------
-      # 1. Enforce strict branch promotion
-      # -----------------------------------------
       - name: Validate branch promotion
         env:
           SOURCE_BRANCH: ${{ github.head_ref }}
@@ -35,45 +29,41 @@ jobs:
           SOURCE_REPO: ${{ github.event.pull_request.head.repo.full_name }}
         run: |
           if [[ "$SOURCE_REPO" != "$GITHUB_REPOSITORY" ]]; then
-            echo "::error::PR must originate in this repository"
+            echo "::error::PR must come from this repository"
             exit 1
           fi
 
           case "$TARGET_BRANCH:$SOURCE_BRANCH" in
-
             develop:feature/*)
-              DAB_TARGET=dev
+              echo "Valid promotion: Feature -> DEV"
               ;;
-
             release:develop)
-              DAB_TARGET=test
+              echo "Valid promotion: DEV -> TEST"
               ;;
-
             main:release)
-              DAB_TARGET=prod
+              echo "Valid promotion: TEST -> PROD"
               ;;
-
             *)
               echo "::error::Invalid promotion: $SOURCE_BRANCH -> $TARGET_BRANCH"
               exit 1
               ;;
           esac
 
-          echo "DAB_TARGET=$DAB_TARGET" >> "$GITHUB_ENV"
-          echo "Valid promotion: $SOURCE_BRANCH -> $TARGET_BRANCH"
-          echo "Databricks target: $DAB_TARGET"
+  # =========================================
+  # JOB 2 - CODE QUALITY
+  # Runs ONLY if promotion-gate passes
+  # =========================================
+  python-quality:
+    name: Python Quality
+    needs: promotion-gate
+    runs-on: ubuntu-latest
 
-      # -----------------------------------------
-      # 2. Checkout PR code
-      # -----------------------------------------
-      - name: Checkout repository
-        uses: actions/checkout@v7
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # -----------------------------------------
-      # 3. Python environment
-      # -----------------------------------------
       - name: Setup Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
@@ -82,22 +72,13 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev]" pyyaml
 
-      # -----------------------------------------
-      # 4. Code quality
-      # -----------------------------------------
       - name: Ruff lint
         run: python -m ruff check .
 
-      # -----------------------------------------
-      # 5. Unit tests
-      # -----------------------------------------
       - name: Pytest
         run: python -m pytest tests/member/unit -v
 
-      # -----------------------------------------
-      # 6. Validate bundle YAML syntax
-      # -----------------------------------------
-      - name: Validate YAML files
+      - name: Validate bundle YAML
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -105,17 +86,13 @@ jobs:
 
           files = [
               Path("databricks.yml"),
-              *Path("resources").rglob("*.yml"),
+              *Path("resources").rglob("*.yml")
           ]
 
-          for path in files:
-              with path.open(encoding="utf-8") as handle:
-                  yaml.safe_load(handle)
-              print(f"Valid YAML: {path}")
+          for file in files:
+              with file.open(encoding="utf-8") as stream:
+                  yaml.safe_load(stream)
+              print(f"Valid: {file}")
 
-          print(f"Validated {len(files)} YAML files")
+          print("All YAML files validated")
           PY
-
-      - name: CI completed
-        run: |
-          echo "CI passed for target: $DAB_TARGET"
