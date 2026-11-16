@@ -5,12 +5,18 @@ resources:
       name: PAYER02_${bundle.target}_cdw_nightly_batch_load
       max_concurrent_runs: 1
 
-      # Example: 2 AM Eastern nightly.
-      # Keep paused until end-to-end testing succeeds.
+      # Monthly schedule: 1st day, 2 AM Eastern
       schedule:
-        quartz_cron_expression: "0 0 2 * * ?"
+        quartz_cron_expression: "0 0 2 1 * ?"
         timezone_id: America/New_York
-        pause_status: PAUSED
+        pause_status: UNPAUSED
+
+      # Email notifications
+      email_notifications:
+        on_success:
+          - ${workspace.current_user.userName}
+        on_failure:
+          - ${workspace.current_user.userName}
 
       tasks:
 
