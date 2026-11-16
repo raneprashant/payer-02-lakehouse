@@ -1,0 +1,89 @@
+
+name: PAYER02 - CD
+
+on:
+  push:
+    branches:
+      - develop
+      - release
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+
+  # ==========================================
+  # JOB 1 - MAP BRANCH TO ENVIRONMENT
+  # ==========================================
+  resolve-target:
+    name: Resolve Deployment Target
+    runs-on: ubuntu-latest
+
+    outputs:
+      github_env: ${{ steps.map.outputs.github_env }}
+      dab_target: ${{ steps.map.outputs.dab_target }}
+
+    steps:
+      - name: Resolve target
+        id: map
+        run: |
+          case "$GITHUB_REF_NAME" in
+            develop)
+              echo "github_env=DEV" >> "$GITHUB_OUTPUT"
+              echo "dab_target=dev" >> "$GITHUB_OUTPUT"
+              ;;
+            release)
+              echo "github_env=TEST" >> "$GITHUB_OUTPUT"
+              echo "dab_target=test" >> "$GITHUB_OUTPUT"
+              ;;
+            main)
+              echo "github_env=PROD" >> "$GITHUB_OUTPUT"
+              echo "dab_target=prod" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::Unsupported branch"
+              exit 1
+              ;;
+          esac
+
+  # ==========================================
+  # JOB 2 - VALIDATE, DEPLOY, ENV CHECK
+  # ==========================================
+  deploy:
+    name: Deploy and Environment Check
+    needs: resolve-target
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ needs.resolve-target.outputs.github_env }}
+
+    concurrency:
+      group: payer02-${{ needs.resolve-target.outputs.dab_target }}
+      cancel-in-progress: false
+
+    env:
+      DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DAB_TARGET: ${{ needs.resolve-target.outputs.dab_target }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Verify authentication
+        run: databricks current-user me
+
+      - name: Validate Databricks bundle
+        run: databricks bundle validate --target "$DAB_TARGET"
+
+      - name: Deploy Databricks bundle
+        run: databricks bundle deploy --target "$DAB_TARGET"
+
+      # ONLY permitted post-deployment execution
+      - name: Run Environment Check
+        run: |
+          databricks bundle run environment_check --target "$DAB_TARGET"
